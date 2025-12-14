@@ -1,18 +1,30 @@
-import { findUserById } from "../dao/user.dao.js"
-import { verifyToken } from "./helper.js"
+import { findUserById } from "../dao/user.dao.js";
+import { verifyToken } from "./helper.js";
 
 export const attachUser = async (req, res, next) => {
-    const token = req.cookies.accessToken
-    if(!token) return next()
+  // ✅ ALWAYS allow preflight requests
+  if (req.method === "OPTIONS") {
+    return next();
+  }
 
-    try {
-        const decoded = verifyToken(token)
-        const user = await findUserById(decoded)
-        if(!user) return next()
-        req.user = user
-        next()
-    } catch (error) {
-        console.log(error)
-        next()
+  const token = req.cookies?.accessToken;
+
+  // No token → continue silently
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = verifyToken(token);
+    const user = await findUserById(decoded);
+
+    if (user) {
+      req.user = user;
     }
-}
+
+    next();
+  } catch (error) {
+    console.error("attachUser error:", error.message);
+    next();
+  }
+};

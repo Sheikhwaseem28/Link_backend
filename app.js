@@ -53,12 +53,14 @@ app.get("/", (req, res) => {
   res.send("Welcome to LinkZipp API Server 🚀");
 });
 
+app.use("/api/auth", auth_routes);
+
 /* ✅ Attach User Middleware */
 app.use(attachUser);
 
 /* ✅ Routes */
 app.use("/api/user", user_routes);
-app.use("/api/auth", auth_routes);
+
 app.use("/api/create", short_url);
 app.get("/:id", redirectFromShortUrl);
 
