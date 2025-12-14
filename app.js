@@ -15,78 +15,55 @@ dotenv.config();
 
 const app = express();
 
-/* =======================
-   CORS CONFIG
-======================= */
+/* ✅ Allowed Frontend Origins */
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://link-frontend-vert.vercel.app"
+  "https://link-frontend-vert.vercel.app",
 ];
 
+/* ✅ CORS — THIS ALONE HANDLES PREFLIGHT */
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true); // Postman / server calls
-
+      if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-
-      return callback(new Error("CORS not allowed"));
+      return callback(null, false);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-/* ✅ Explicit preflight handler */
-app.options("*", (req, res) => {
-  res.sendStatus(204);
-});
-
-/* =======================
-   MIDDLEWARES
-======================= */
+/* ✅ Middlewares */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* =======================
-   BASIC ROUTES
-======================= */
-app.get("/", (req, res) => {
-  res.send("Welcome to LinkZipp API Server 🚀");
-});
-
-/* Ignore browser asset noise */
+/* ✅ Ignore favicon (CRITICAL) */
 app.get("/favicon.ico", (_, res) => res.status(204).end());
 app.get("/favicon.png", (_, res) => res.status(204).end());
 
-/* =======================
-   API ROUTES
-======================= */
-app.use("/api/auth", auth_routes); // login/register first
+/* ✅ Health check */
+app.get("/", (_, res) => {
+  res.send("Welcome to LinkZipp API Server 🚀");
+});
 
-app.use(attachUser); // attach user AFTER auth
-
+/* ✅ API routes */
+app.use("/api/auth", auth_routes);
+app.use(attachUser);
 app.use("/api/user", user_routes);
 app.use("/api/create", short_url);
 
-/* =======================
-   SHORT URL REDIRECT
-   ⚠️ MUST BE LAST
-======================= */
+/* ✅ Short URL redirect (LAST) */
 app.get("/:id", redirectFromShortUrl);
 
-/* =======================
-   ERROR HANDLER
-======================= */
+/* ✅ Global error handler */
 app.use(errorHandler);
 
-/* =======================
-   START SERVER
-======================= */
+/* ✅ Start server */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, async () => {
