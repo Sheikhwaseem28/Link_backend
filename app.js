@@ -25,7 +25,7 @@ app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 
 app.get('/', (req, res) => {
-    res.send("Welcome to EchoCircle API Server");
+    res.send("Welcome to Linkzipp API Server");
 });
 
 app.use(attachUser)
