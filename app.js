@@ -15,40 +15,23 @@ dotenv.config();
 
 const app = express();
 
-/* ✅ Allowed Frontend Origins */
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://link-frontend-vert.vercel.app",
-];
-
+/* ✅ CORS */
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "https://link-frontend-vert.vercel.app"
-      ];
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // 🔥 ALWAYS allow but don’t crash
-      return callback(null, true);
-    },
+    origin: [
+      "http://localhost:5173",
+      "https://link-frontend-vert.vercel.app",
+    ],
     credentials: true,
   })
 );
-
 
 /* ✅ Middlewares */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-/* ✅ Ignore favicon (CRITICAL) */
+/* ✅ Ignore favicon */
 app.get("/favicon.ico", (_, res) => res.status(204).end());
 app.get("/favicon.png", (_, res) => res.status(204).end());
 
@@ -57,22 +40,18 @@ app.get("/", (_, res) => {
   res.send("Welcome to LinkZipp API Server 🚀");
 });
 
-/* ✅ API routes */
+/* ✅ Routes */
 app.use("/api/auth", auth_routes);
 app.use(attachUser);
 app.use("/api/user", user_routes);
 app.use("/api/create", short_url);
 
-/* ✅ Short URL redirect (LAST) */
+/* ✅ Redirect (LAST) */
 app.get("/:id", redirectFromShortUrl);
 
-/* ✅ Global error handler */
+/* ✅ Error handler */
 app.use(errorHandler);
 
-/* ✅ Start server */
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, async () => {
-  await connectDB();
-  console.log(`Server running on port ${PORT}`);
-});
+/* ✅ REQUIRED FOR VERCEL */
+await connectDB();
+export default app;
