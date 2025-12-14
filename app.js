@@ -24,6 +24,10 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
 
+app.get('/', (req, res) => {
+    res.send("Welcome to EchoCircle API Server");
+});
+
 app.use(attachUser)
 
 app.use("/api/user",user_routes)
