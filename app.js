@@ -21,21 +21,27 @@ const allowedOrigins = [
   "https://link-frontend-vert.vercel.app",
 ];
 
-/* ✅ CORS — THIS ALONE HANDLES PREFLIGHT */
 app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
+
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "https://link-frontend-vert.vercel.app"
+      ];
+
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
-      return callback(null, false);
+
+      // 🔥 ALWAYS allow but don’t crash
+      return callback(null, true);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 
 /* ✅ Middlewares */
 app.use(express.json());
