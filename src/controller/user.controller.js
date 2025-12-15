@@ -1,8 +1,10 @@
-import wrapAsync from "../utils/tryCatchWrapper.js"
-import { getAllUserUrlsDao } from "../dao/user.dao.js"
+import { getAllUserUrlsDao } from "../dao/user.dao.js";
 
-export const getAllUserUrls = wrapAsync(async (req, res) => {
-    const {_id} = req.user
-    const urls = await getAllUserUrlsDao(_id)
-    res.status(200).json({message:"success",urls})
-})
+export const getUserUrls = async (req, res, next) => {
+  try {
+    const urls = await getAllUserUrlsDao(req.user._id);
+    res.status(200).json({ success: true, urls });
+  } catch (error) {
+    next(error);
+  }
+};
