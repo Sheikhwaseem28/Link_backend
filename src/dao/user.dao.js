@@ -1,24 +1,28 @@
-import User from "../models/user.model.js"
-import UrlModel from "../models/short_url.model.js"
+import { createUser, findUserByEmail, findUserByEmailByPassword } from "../dao/user.dao.js"
+import { ConflictError } from "../utils/errorHandler.js"
+import { signToken } from "../utils/helper.js"
 
-export const findUserByEmail = async (email) => {
-    return await User.findOne({email})
+export const registerUser = async (name, email, password) => {
+    const user = await findUserByEmail(email)
+    if (user) throw new ConflictError("User already exists")
+    const newUser = await createUser(name, email, password)
+    const token = await signToken({ id: newUser._id })
+    return { token, user: newUser }
 }
 
-export const findUserByEmailByPassword = async (email) => {
-    return await User.findOne({email}).select('+password')
-}
+export const loginUser = async (email, password) => {
+    // Use findUserByEmailByPassword which includes the password field
+    const user = await findUserByEmailByPassword(email)
+    if (!user) throw new Error("Invalid email or password")
 
-export const findUserById = async (id) => {
-    return await User.findById(id)
-}
-
-export const createUser = async (name, email, password) => {
-    const newUser = new User({name, email, password})
-    await newUser.save()
-    return newUser
-}
-
-export const getAllUserUrlsDao = async (id) => {
-    return await UrlModel.find({user:id})
+    const isPasswordValid = await user.comparePassword(password)
+    if (!isPasswordValid) throw new Error("Invalid email or password")
+    
+    const token = signToken({ id: user._id })
+    
+    // Remove password from user object before returning
+    const userWithoutPassword = user.toObject()
+    delete userWithoutPassword.password
+    
+    return { token, user: userWithoutPassword }
 }
