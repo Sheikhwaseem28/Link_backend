@@ -1,3 +1,6 @@
+import { verifyToken } from "../utils/helper.js";
+import { findUserById } from "../dao/user.dao.js";
+
 export const authMiddleware = async (req, res, next) => {
   const token = req.cookies.accessToken;
   if (!token) {
