@@ -1,9 +1,14 @@
-import express from "express"
-import { getAllUserUrls } from "../controller/user.controller.js"
-import { authMiddleware } from "../middleware/auth.middleware.js"
+// src/routes/user.routes.js
+import express from 'express';
+import { authMiddleware } from "../middleware/auth.middleware.js";
+import { getUserUrls } from "../controller/user.controller.js";
 
-const router = express.Router()
+const router = express.Router();
 
-router.post("/urls",authMiddleware, getAllUserUrls)
+// All user routes require authentication
+router.use(authMiddleware);
 
-export default router
+// Get user's URLs - using GET for RESTful API
+router.get("/urls", getUserUrls);
+
+export default router;

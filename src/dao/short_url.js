@@ -26,3 +26,14 @@ export const getShortUrl = async (shortUrl) => {
 export const getCustomShortUrl = async (slug) => {
     return await urlSchema.findOne({short_url:slug});
 }
+
+export const getUrlsByUserId = async (userId) => {
+  try {
+    return await urlSchema.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .lean(); // Convert to plain JavaScript objects
+  } catch (error) {
+    console.error("Error fetching user URLs:", error);
+    throw error;
+  }
+};
