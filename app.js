@@ -20,8 +20,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://link-frontend-vert.vercel.app",
-      "https://linkzipp.vercel.app"
+      "https://link-frontend-omega.vercel.app"
     ],
     credentials: true,
   })
