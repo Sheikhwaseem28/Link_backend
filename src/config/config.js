@@ -1,8 +1,8 @@
-const isProduction = process.env.NODE_ENV === "production";
+const isLocal = process.env.NODE_ENV === "development"; // true only locally
 
 export const cookieOptions = {
   httpOnly: true,
-  secure: isProduction,       // true in production (HTTPS), false in dev (HTTP)
-  sameSite: isProduction ? "None" : "Lax",   // None in production, Lax in dev
+  secure: !isLocal,            // Always true in prod/Vercel
+  sameSite: isLocal ? "Lax" : "None",
   maxAge: 7 * 24 * 60 * 60 * 1000
 };
