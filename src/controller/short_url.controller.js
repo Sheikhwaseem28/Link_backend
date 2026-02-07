@@ -19,8 +19,11 @@ export const createShortUrl = wrapAsync(async (req, res) => {
     shortUrl = await createShortUrlWithoutUser(data.url);
   }
 
+  const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}/`;
+  const finalShortUrl = baseUrl.endsWith("/") ? baseUrl + shortUrl : baseUrl + "/" + shortUrl;
+
   res.status(200).json({
-    shortUrl: process.env.APP_URL + shortUrl
+    shortUrl: finalShortUrl
   });
 });
 
@@ -46,7 +49,10 @@ export const createCustomShortUrl = wrapAsync(async (req, res) => {
 
   const shortUrl = await createShortUrlWithoutUser(url, slug);
 
+  const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}/`;
+  const finalShortUrl = baseUrl.endsWith("/") ? baseUrl + shortUrl : baseUrl + "/" + shortUrl;
+
   res.status(200).json({
-    shortUrl: process.env.APP_URL + shortUrl
+    shortUrl: finalShortUrl
   });
 });

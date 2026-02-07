@@ -1,6 +1,8 @@
+const isProduction = process.env.NODE_ENV === "production";
+
 export const cookieOptions = {
   httpOnly: true,
-  secure: true,       // REQUIRED on Vercel
-  sameSite: "None",   // REQUIRED for cross-domain
+  secure: isProduction,       // true in production (HTTPS), false in dev (HTTP)
+  sameSite: isProduction ? "None" : "Lax",   // None in production, Lax in dev
   maxAge: 7 * 24 * 60 * 60 * 1000
 };
