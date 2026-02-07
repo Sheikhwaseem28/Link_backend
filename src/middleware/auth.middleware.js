@@ -2,7 +2,7 @@ import { verifyToken } from "../utils/helper.js";
 import { findUserById } from "../dao/user.dao.js";
 
 export const authMiddleware = async (req, res, next) => {
-  const token = req.cookies.accessToken;
+  const token = req.cookies.accessToken || req.headers.authorization?.split(" ")[1]; // Check cookie OR header
   if (!token) {
     return res.status(401).json({ message: "Unauthorized" });
   }
