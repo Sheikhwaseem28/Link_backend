@@ -21,6 +21,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://link-frontend-vert.vercel.app",
+      "https://linkzipp.vercel.app"
     ],
     credentials: true,
   })
