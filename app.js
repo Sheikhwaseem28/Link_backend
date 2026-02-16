@@ -17,35 +17,36 @@ const app = express();
 
 app.set("trust proxy", 1); // Trust the first proxy (Vercel)
 
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://link-frontend-vert.vercel.app",
+      "https://linkzipp.vercel.app",
+      "https://link-frontend-omega.vercel.app"
+    ];
+
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'Access-Control-Allow-Origin'],
+  exposedHeaders: ['Set-Cookie']
+};
+
 /* ✅ CORS */
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "https://link-frontend-vert.vercel.app",
-        "https://linkzipp.vercel.app",
-        "https://link-frontend-omega.vercel.app"
-      ];
+app.use(cors(corsOptions));
 
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.indexOf(origin) !== -1 || origin.endsWith(".vercel.app")) {
-        callback(null, true);
-      } else {
-        console.log("Blocked by CORS:", origin);
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
-  })
-);
-
-// Enable pre-flight requests for all routes
-app.options('*', cors());
+// Enable pre-flight requests for all routes with SAME options
+app.options('*', cors(corsOptions));
 
 /* ✅ Middlewares */
 app.use(express.json());
