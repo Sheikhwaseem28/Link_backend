@@ -36,7 +36,9 @@ export const deleteUserUrl = wrapAsync(async (req, res) => {
   }
 
   const { id } = req.params;
+  console.log("Attempting to delete URL:", id, "for user:", req.user._id);
   const deletedUrl = await deleteShortUrl(id, req.user._id);
+  console.log("Delete result:", deletedUrl);
 
   if (!deletedUrl) {
     return res.status(404).json({ message: "URL not found or unauthorized" });

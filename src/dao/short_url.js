@@ -39,5 +39,6 @@ export const getUrlsByUserId = async (userId) => {
 };
 
 export const deleteShortUrl = async (urlId, userId) => {
+    console.log("DAO deleteShortUrl params:", { urlId, userId });
     return await urlSchema.findOneAndDelete({ _id: urlId, user: userId });
 };
