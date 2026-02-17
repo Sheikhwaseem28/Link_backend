@@ -1,5 +1,6 @@
 // src/controller/user.controller.js
 import { getUrlsByUserId, deleteShortUrl } from "../dao/short_url.js";
+import { createShortUrlWithUser } from "../services/short_url.service.js";
 import wrapAsync from "../utils/tryCatchWrapper.js";
 
 export const getUserUrls = wrapAsync(async (req, res) => {
@@ -21,12 +22,18 @@ export const createUserUrl = wrapAsync(async (req, res) => {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
-  // Your existing URL creation logic
-  const data = req.body;
-  // ... rest of your URL creation logic
+  const { url, slug } = req.body;
+  if (!url) {
+    return res.status(400).json({ message: "URL is required" });
+  }
+
+  const shortUrl = await createShortUrlWithUser(url, req.user._id, slug);
+
+  const baseUrl = process.env.APP_URL || `${req.protocol}://${req.get("host")}/`;
+  const finalShortUrl = baseUrl.endsWith("/") ? baseUrl + shortUrl : baseUrl + "/" + shortUrl;
 
   res.status(200).json({
-    shortUrl: process.env.APP_URL + shortUrl
+    shortUrl: finalShortUrl
   });
 });
 

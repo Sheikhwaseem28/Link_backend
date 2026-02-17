@@ -7,7 +7,7 @@ export const attachUser = async (req, res, next) => {
     return next();
   }
 
-  const token = req.cookies?.accessToken;
+  const token = req.cookies?.accessToken || req.headers.authorization?.split(" ")[1];
 
   // No token → continue silently
   if (!token) {
