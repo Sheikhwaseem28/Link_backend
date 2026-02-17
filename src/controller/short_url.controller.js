@@ -28,7 +28,7 @@ export const redirectFromShortUrl = wrapAsync(async (req, res) => {
   const { id } = req.params;
 
   // ✅ Prevent favicon & invalid hits
-  if (!id || id.includes(".") || id.length > 20) {
+  if (!id || id.includes(".") || id.length > 50) {
     return res.status(404).end();
   }
 
